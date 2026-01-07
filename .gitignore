@@ -1,0 +1,28 @@
+# Ignore generated videos
+output/*.mp4
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+.env/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+
+# Ignore generated videos
+*.mp4
+
+# Ignore temp files
+__pycache__/
+*.pyc
+
+# Ignore inputs if large (optional)
+input/*.xlsx
+
