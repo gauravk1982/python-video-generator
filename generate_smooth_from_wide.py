@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import matplotlib.ticker as ticker
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+import os
 
 # ================= SETTINGS ============================
 EXCEL_FILE = r"input/ODI_runs_multilevel.xlsx"
@@ -11,7 +13,25 @@ OUTPUT_VIDEO = r"output/ODI_Top10_FlyIn_3min.mp4"
 FPS = 25
 SECONDS_PER_YEAR = 3      # ~3 minutes total video
 TOP_N = 10
+PHOTO_DIR = "Photos"
+PHOTO_SIZE = 0.4
+PHOTO_X_OFFSET = -0.05
+
 # ======================================================
+photo_cache = {}
+
+def get_player_image(name):
+    if name in photo_cache:
+        return photo_cache[name]
+
+    path = os.path.join(PHOTO_DIR, f"{name}.png")
+    if not os.path.exists(path):
+        return None
+
+    img = plt.imread(path)
+    imagebox = OffsetImage(img, zoom=PHOTO_SIZE)
+    photo_cache[name] = imagebox
+    return imagebox
 
 
 # ---------------- LOAD DATA ----------------
@@ -104,6 +124,20 @@ def update(frame):
         color="skyblue",
         edgecolor="black"
     )
+# ---- PLAYER PHOTOS ----
+for y, player in zip(y_positions, temp.index):
+    imagebox = get_player_image(player)
+    if imagebox is None:
+        continue
+
+    ab = AnnotationBbox(
+        imagebox,
+        (PHOTO_X_OFFSET, y),
+        xycoords=("axes fraction", "data"),
+        frameon=False,
+        box_alignment=(0.5, 0.5)
+    )
+    ax.add_artist(ab)
 
     # Labels on bars
     for y, (name, val) in zip(y_positions, temp[["value"]].itertuples()):
